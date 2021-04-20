@@ -1,0 +1,325 @@
+//1
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<h1>CSS Background-color example!</h1>
+		<div>
+			<span>This is a text inside div element.</span>
+			<p>This is paragraph that has its own background color.</p>
+			<span>We are still inside div element.</span>
+		</div>
+	</body>
+</html>
+
+//css code
+h1 {
+	background-color: rgb(86, 86, 245);
+	padding: 15px 15px 15px 0px;
+	margin: 0px;
+}
+div {
+	padding-top: 0px;
+	background-color: rgb(190, 240, 241);
+}
+
+span {
+	display: block;
+	background-color: rgb(145, 176, 216);
+	padding-bottom: 20px;
+}
+
+p {
+	margin-top: 0px;
+}
+
+//2
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div>
+			<h1>This is heading 1</h1>
+			<h2>This is heading 2</h2>
+			<h3>This is heading 3</h3>
+			<h4>This is heading <small> 4</small></h4>
+		</div>
+	</body>
+</html>
+
+
+//css code
+div {
+	border: 1px solid black;
+	background: rgb(151, 228, 241);
+}
+h2 {
+	text-decoration: line-through;
+}
+
+h3 {
+	text-decoration: underline;
+}
+
+
+//3
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div>
+			<p id="para">This is some text.</p>
+			<p>This is some text.</p>
+			<p>This is some text.</p>
+		</div>
+	</body>
+</html>
+
+
+//css code
+div {
+	background: rgb(165, 235, 235);
+	border: 1px solid black;
+	padding-left: 5px;
+}
+
+#para {
+	text-transform: uppercase;
+}
+
+//4
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div>
+			<a href="https://github.com/PriyankaMali-13">This is a link.</a>
+		</div>
+	</body>
+</html>
+
+//css code
+div {
+	border: 1px solid black;
+	background: rgb(151, 228, 241);
+}
+
+a {
+	color: crimson;
+	padding-left: 15px;
+}
+/* unvisited link */
+a:link {
+	color: rgb(70, 24, 233);
+}
+
+/* visited link */
+a:visited {
+	color: rgb(8, 139, 8);
+}
+
+
+//6
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div>
+			<table>
+				<th>Firstname</th>
+				<th>Lastname</th>
+				<th>Savings</th>
+				<tr>
+					<td>Petter</td>
+					<td>Griffin</td>
+					<td>$100</td>
+				</tr>
+				<tr>
+					<td>Lois</td>
+					<td>Griffin</td>
+					<td>$150</td>
+				</tr>
+				<tr>
+					<td>Joe</td>
+					<td>Swanson</td>
+					<td>$300</td>
+				</tr>
+				<tr>
+					<td>Cleveland</td>
+					<td>Brown</td>
+					<td>$250</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
+ //css code
+
+div {
+	border: 1px solid black;
+}
+
+table,
+th,
+td {
+	border: 1px solid green;
+	margin-left: 10px;
+}
+th {
+	background-color: green;
+	color: white;
+}
+
+
+//5
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div>
+			<table>
+				<th>Firstname</th>
+				<th>Lastname</th>
+				<tr>
+					<td>Petter</td>
+					<td>Griffin</td>
+				</tr>
+				<tr>
+					<td>Lois</td>
+					<td>Griffin</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
+
+
+//css code
+div {
+	border: 1px solid black;
+}
+
+table,
+th,
+td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	
+}
+
+table{
+	margin-left: 10px;
+
+}
+
+
+//7
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div id="div1">
+			<div id="div2">
+				<p>
+					Note: IE8 supports the outline properties only if a Doctype!
+					is specified.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
+
+//css code
+#div1 {
+	border: 1px solid black;
+	width: 50%;
+}
+
+p {
+	border: 1px solid red;
+	margin: 0;
+	font-size: 25px;
+}
+
+#div2 {
+	border: 2px dotted rgb(13, 241, 13);
+	margin: 15px;
+}
+
+
+//8
+//html code
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css" />
+		<title>CSS Examples</title>
+	</head>
+	<body>
+		<div id="div1">
+			<div id="p1">Some text.</div>
+			<div id="p2">Some text.</div>
+			<div id="p3">Some text.</div>
+			<div id="p4"></div>
+		</div>
+	</body>
+</html>
+
+// css code
+#div1 {
+	border: 1px solid black;
+	width: 50%;
+}
+
+#p1 {
+	border: 6px solid black;
+	background-color: rgb(158, 239, 241);
+}
+
+#p2 {
+	border: 4px solid black;
+	background-color: rgb(158, 239, 241);
+	margin: 20px 2px 20px 0px; /*t r b l*/
+}
+
+#p3 {
+	border: 2px solid black;
+	background-color: rgb(158, 239, 241);
+	margin: 20px 2px 20px 2px;
+}
+
+#p4 {
+	background-color: rgb(158, 239, 241);
+	height: 20px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
