@@ -1,0 +1,157 @@
+* {
+	margin: 0;
+}
+body {
+	font-family: "Poppins", sans-serif;
+	font-weight: 400;
+	line-height: 1.4;
+	color: var(--main-white);
+}
+
+.wrapper {
+	width: 100%;
+	min-width: 960px;
+	margin: 0 auto;
+}
+/* section about nav*/
+nav {
+	background: #be3144;
+	position: fixed;
+	z-index: 1005;
+}
+
+nav ul {
+	list-style-type: none;
+	padding: 0;
+}
+
+nav a {
+	text-decoration: none;
+	text-align: center;
+	color: white;
+	display: block;
+	padding: 20px;
+}
+
+nav a:hover {
+	background-color: #45567d;
+}
+
+@media screen and (min-width: 760px) {
+	nav ul {
+		display: flex;
+		justify-content: flex-end;
+	}
+	nav {
+		width: 100%;
+	}
+}
+
+.home-section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100vh;
+	background-color: teal;
+}
+
+h1 {
+	font-family: "Raleway", sans-serif;
+	font-size: 50px;
+	color: white;
+}
+.home-section > p {
+	font-style: italic;
+	font-size: 25px;
+
+	color: white;
+}
+
+/* section about me*/
+.about-container {
+	width: 80%;
+	height: 330px;
+	background: #ffffff;
+	border-radius: 20px;
+	box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
+	display: flex;
+	margin: 20px auto 20px auto;
+	position: relative;
+	justify-content: space-evenly;
+	align-items: center;
+}
+.about-container img {
+	height: 250px;
+	box-shadow: 10px 10px 5px #ccc;
+}
+.about-text {
+	width: 500px;
+}
+.about-text p:nth-child(1) {
+	color: #403e3e;
+	font-family: myriad pro;
+	font-weight: bold;
+	font-size: 23px;
+	line-height: 40px;
+}
+
+.about-text p:nth-child(2),
+.about-text p:nth-child(3) {
+	color: #7e7d7d;
+	font-family: calibri;
+	font-size: 16px;
+}
+.about-text button {
+	width: 120px;
+	height: 40px;
+	color: #ffffff;
+	outline: none;
+	border: none;
+	font-family: calibri;
+	background-color: #d81616;
+}
+
+.section-a {
+	padding: 20px;
+	background: teal;
+	text-align: center;
+}
+
+#p1 {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	font-size: 30px;
+	font-family: calibri;
+	color: white;
+}
+
+#p2 {
+	text-align: justify;
+	font-style: italic;
+	color: white;
+	padding: 60px;
+}
+
+#technology {
+	width: 300px;
+	height: 200px;
+	border: 2px solid black;
+	margin: 20px;
+}
+
+/*footer section*/
+.footer {
+	background-color: #be3144;
+	color: white;
+	padding: 20px;
+	text-align: center;
+	line-height: 30px;
+}
+
+#mail {
+	color: white;
+
+	text-decoration: none;
+}
