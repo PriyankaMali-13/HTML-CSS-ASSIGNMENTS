@@ -4,7 +4,3 @@ services:
     env: static
     staticPublishPath: .
     buildCommand: ""
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /enterprise-insights.html
