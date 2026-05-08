@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsightAI — Enterprise Intelligence Platform</title>
+<style>
+:root {
+  --bg-base: #060a14;
+  --bg-panel: rgba(255,255,255,0.04);
+  --bg-glass: rgba(255,255,255,0.07);
+  --bg-glass-hover: rgba(255,255,255,0.10);
+  --border: rgba(255,255,255,0.10);
+  --border-accent: rgba(99,179,237,0.35);
+  --accent: #3b82f6;
+  --accent2: #8b5cf6;
+  --accent3: #06b6d4;
+  --accent-glow: rgba(59,130,246,0.25);
+  --text: #f0f4ff;
+  --text-muted: #8892a4;
+  --text-dim: #4a5568;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --sidebar-w: 240px;
+  --header-h: 64px;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── ANIMATED BG ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(59,130,246,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% 75%, rgba(139,92,246,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(6,182,212,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+
+/* ─── LAYOUT ─── */
+.layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: rgba(6,10,20,0.85);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; bottom: 0; z-index: 100;
+  transition: transform .3s ease;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: #fff;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text span { color: var(--accent); }
+
+.sidebar-section { padding: 18px 12px 8px; }
+.sidebar-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  color: var(--text-dim); text-transform: uppercase;
+  padding: 0 8px; margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .2s; color: var(--text-muted);
+  font-size: 13.5px; font-weight: 500; position: relative;
+  user-select: none;
+}
+.nav-item:hover { background: var(--bg-glass); color: var(--text); }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(59,130,246,0.18), rgba(59,130,246,0.06));
+  color: var(--accent); border: 1px solid rgba(59,130,246,0.2);
+}
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 60%; background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto; background: var(--accent); color: #fff;
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px;
+}
+.nav-badge.red { background: var(--red); }
+
+.sidebar-footer {
+  margin-top: auto; padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+.user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--bg-glass); cursor: pointer;
+  transition: background .2s;
+}
+.user-card:hover { background: var(--bg-glass-hover); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 11px; color: var(--text-muted); }
+
+/* ─── MAIN ─── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.header {
+  height: var(--header-h);
+  background: rgba(6,10,20,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 28px;
+  position: sticky; top: 0; z-index: 50;
+}
+.header-title { font-size: 17px; font-weight: 700; flex: 1; }
+.header-title span { color: var(--text-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
+
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  border-radius: 99px; padding: 7px 16px; width: 260px;
+  transition: all .2s; cursor: text;
+}
+.search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.search-box input {
+  background: none; border: none; outline: none;
+  color: var(--text); font-size: 13px; flex: 1;
+  font-family: inherit;
+}
+.search-box input::placeholder { color: var(--text-muted); }
+.search-icon { color: var(--text-muted); font-size: 14px; }
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: all .2s; position: relative;
+}
+.icon-btn:hover { background: var(--bg-glass-hover); border-color: var(--border-accent); }
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; background: var(--red);
+  border-radius: 50%; border: 1.5px solid var(--bg-base);
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 18px; border-radius: 99px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; transition: all .2s; font-family: inherit;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; box-shadow: 0 4px 15px var(--accent-glow);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+.btn-ghost {
+  background: var(--bg-glass); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--bg-glass-hover); border-color: var(--border-accent); }
+
+/* ─── CONTENT ─── */
+.content { padding: 28px; flex: 1; }
+
+/* ─── TABS ─── */
+.tabs { display: flex; gap: 4px; margin-bottom: 26px; }
+.tab {
+  padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s; color: var(--text-muted);
+  border: 1px solid transparent;
+}
+.tab:hover { color: var(--text); background: var(--bg-glass); }
+.tab.active {
+  color: var(--accent); background: rgba(59,130,246,0.12);
+  border-color: rgba(59,130,246,0.25);
+}
+
+/* ─── GRID ─── */
+.grid { display: grid; gap: 20px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-main { grid-template-columns: 1fr 360px; }
+.grid-chart { grid-template-columns: 2fr 1fr; }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+  transition: all .25s;
+  overflow: hidden;
+}
+.card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.card-header { padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+.card-body { padding: 16px 20px 20px; }
+
+/* ─── METRIC CARDS ─── */
+.metric-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  transition: all .25s;
+  cursor: default;
+  position: relative; overflow: hidden;
+}
+.metric-card::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: var(--card-accent, linear-gradient(90deg,var(--accent),var(--accent2)));
+}
+.metric-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.15); }
+.metric-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 14px;
+  background: var(--icon-bg, rgba(59,130,246,0.15));
+}
+.metric-value { font-size: 30px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.metric-label { font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
+.metric-change {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11.5px; font-weight: 600; margin-top: 8px;
+  padding: 2px 8px; border-radius: 99px;
+}
+.metric-change.up { color: var(--green); background: rgba(16,185,129,0.12); }
+.metric-change.down { color: var(--red); background: rgba(239,68,68,0.12); }
+
+/* ─── INSIGHT FEED ─── */
+.insight-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: background .2s; margin-bottom: 2px;
+}
+.insight-item:hover { background: var(--bg-glass); }
+.insight-source {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.insight-content { flex: 1; }
+.insight-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+.insight-summary { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.insight-meta { display: flex; gap: 10px; align-items: center; margin-top: 6px; }
+.insight-tag {
+  font-size: 10.5px; font-weight: 600; padding: 2px 8px;
+  border-radius: 99px; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.tag-email { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-meeting { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.tag-ppt { background: rgba(249,115,22,0.15); color: #fb923c; }
+.tag-viva { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag-urgent { background: rgba(239,68,68,0.15); color: #f87171; }
+.insight-time { font-size: 11px; color: var(--text-dim); }
+.insight-priority { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.priority-high { background: var(--red); box-shadow: 0 0 6px rgba(239,68,68,0.6); }
+.priority-med { background: var(--yellow); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+.priority-low { background: var(--green); }
+
+/* ─── AI CHAT ─── */
+.chat-panel {
+  display: flex; flex-direction: column;
+  height: 560px;
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeUp .3s ease; }
+.msg.user { flex-direction: row-reverse; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.msg-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.msg-avatar.ai {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  font-size: 14px;
+}
+.msg-avatar.user { background: linear-gradient(135deg, #10b981, #06b6d4); color: #fff; font-weight: 700; font-size: 11px; }
+.msg-bubble {
+  max-width: 82%; padding: 10px 14px; border-radius: 14px;
+  font-size: 13px; line-height: 1.55;
+}
+.msg.ai .msg-bubble {
+  background: var(--bg-glass); border: 1px solid var(--border);
+  border-top-left-radius: 4px;
+}
+.msg.user .msg-bubble {
+  background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.2));
+  border: 1px solid rgba(139,92,246,0.25);
+  border-top-right-radius: 4px;
+}
+.msg-time { font-size: 10px; color: var(--text-dim); margin-top: 4px; text-align: right; }
+.msg.ai .msg-time { text-align: left; }
+
+.typing-indicator { display: flex; gap: 4px; padding: 4px 2px; }
+.typing-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-muted); animation: bounce .9s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+.chat-input-row {
+  padding: 14px 16px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: center;
+}
+.chat-input {
+  flex: 1; background: var(--bg-glass); border: 1px solid var(--border);
+  border-radius: 99px; padding: 9px 16px; color: var(--text);
+  font-size: 13px; outline: none; font-family: inherit; transition: border .2s;
+}
+.chat-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.chat-input::placeholder { color: var(--text-muted); }
+.chat-send {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; font-size: 15px; transition: transform .2s;
+  flex-shrink: 0;
+}
+.chat-send:hover { transform: scale(1.1); }
+
+.chat-suggestions { padding: 10px 16px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.suggestion-chip {
+  font-size: 11.5px; padding: 5px 12px; border-radius: 99px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  color: var(--text-muted); cursor: pointer; transition: all .2s;
+}
+.suggestion-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.08); }
+
+/* ─── NOTIFICATIONS ─── */
+.notif-item {
+  display: flex; gap: 12px; padding: 12px 14px;
+  border-radius: var(--radius-sm); cursor: pointer; transition: background .2s;
+  position: relative;
+}
+.notif-item:hover { background: var(--bg-glass); }
+.notif-item.unread::before {
+  content: ''; position: absolute; left: 4px; top: 50%;
+  transform: translateY(-50%); width: 5px; height: 5px;
+  border-radius: 50%; background: var(--accent);
+}
+.notif-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.notif-text { flex: 1; }
+.notif-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.notif-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.4; }
+.notif-time { font-size: 10.5px; color: var(--text-dim); white-space: nowrap; }
+
+/* ─── UPLOAD ─── */
+.upload-zone {
+  border: 2px dashed var(--border-accent);
+  border-radius: var(--radius);
+  padding: 36px 24px; text-align: center;
+  cursor: pointer; transition: all .25s;
+  background: rgba(59,130,246,0.03);
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--accent); background: rgba(59,130,246,0.08);
+  transform: scale(1.01);
+}
+.upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.upload-sub { font-size: 12.5px; color: var(--text-muted); }
+.upload-types { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.upload-type-badge {
+  font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
+  border: 1px solid var(--border); color: var(--text-muted);
+}
+
+.file-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-glass); border: 1px solid var(--border);
+  margin-top: 10px; transition: all .2s;
+}
+.file-item:hover { border-color: var(--border-accent); }
+.file-icon { font-size: 20px; flex-shrink: 0; }
+.file-info { flex: 1; }
+.file-name { font-size: 13px; font-weight: 600; }
+.file-meta { font-size: 11px; color: var(--text-muted); }
+.file-status {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 99px;
+}
+.status-done { background: rgba(16,185,129,0.15); color: var(--green); }
+.status-proc { background: rgba(59,130,246,0.15); color: var(--accent); }
+.status-queue { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+
+.progress-bar {
+  height: 3px; background: rgba(255,255,255,0.08); border-radius: 99px;
+  margin-top: 6px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 1s ease; animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ─── MEETING BRIEFING ─── */
+.briefing-card {
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg-glass);
+  margin-bottom: 12px; transition: all .2s; cursor: pointer;
+}
+.briefing-card:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-1px); }
+.briefing-header {
+  padding: 14px 16px; display: flex; align-items: center;
+  gap: 12px; border-bottom: 1px solid var(--border);
+}
+.briefing-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.briefing-info { flex: 1; }
+.briefing-title { font-size: 13.5px; font-weight: 600; }
+.briefing-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+.briefing-time {
+  font-size: 11.5px; font-weight: 600; padding: 4px 10px;
+  border-radius: 99px; background: rgba(139,92,246,0.15); color: #a78bfa;
+}
+.briefing-body { padding: 14px 16px; }
+.briefing-point {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 12.5px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.5;
+}
+.briefing-point::before {
+  content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.briefing-actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
+.btn-xs {
+  font-size: 11.5px; font-weight: 600; padding: 5px 12px;
+  border-radius: 99px; cursor: pointer; border: none;
+  font-family: inherit; transition: all .2s;
+}
+.btn-xs.primary { background: rgba(59,130,246,0.2); color: var(--accent); }
+.btn-xs.primary:hover { background: rgba(59,130,246,0.35); }
+.btn-xs.secondary { background: var(--bg-glass); color: var(--text-muted); border: 1px solid var(--border); }
+.btn-xs.secondary:hover { color: var(--text); border-color: var(--border-accent); }
+
+/* ─── CHARTS ─── */
+canvas { display: block; }
+.chart-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── EXEC SUMMARY ─── */
+.exec-item {
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+}
+.exec-item:last-child { border-bottom: none; padding-bottom: 0; }
+.exec-number {
+  font-size: 22px; font-weight: 800; color: var(--accent);
+  opacity: 0.4; line-height: 1; flex-shrink: 0; width: 28px;
+}
+.exec-text { font-size: 13px; line-height: 1.55; }
+.exec-text strong { color: var(--text); }
+
+/* ─── SPARKLINE ─── */
+.sparkline { display: flex; align-items: flex-end; gap: 3px; height: 36px; }
+.spark-bar {
+  flex: 1; border-radius: 3px 3px 0 0; min-height: 4px;
+  background: linear-gradient(180deg, var(--accent) 0%, rgba(59,130,246,0.3) 100%);
+  transition: height .5s ease; cursor: pointer;
+}
+.spark-bar:hover { background: linear-gradient(180deg, #60a5fa, rgba(59,130,246,0.6)); }
+
+/* ─── STATUS PILLS ─── */
+.status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; padding: 5px 12px;
+  border-radius: 99px; background: var(--bg-glass); border: 1px solid var(--border);
+}
+.pulse { width: 7px; height: 7px; border-radius: 50%; animation: pulse 2s infinite; }
+.pulse.green { background: var(--green); box-shadow: 0 0 0 0 rgba(16,185,129,.4); }
+.pulse.yellow { background: var(--yellow); box-shadow: 0 0 0 0 rgba(245,158,11,.4); animation-delay: .5s; }
+.pulse.blue { background: var(--accent); box-shadow: 0 0 0 0 rgba(59,130,246,.4); animation-delay: 1s; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(16,185,129,.4)} 70%{box-shadow:0 0 0 8px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
+
+/* ─── PAGE SECTIONS ─── */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* ─── TOAST ─── */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+  background: rgba(20,28,48,0.95); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  backdrop-filter: blur(16px); animation: slideIn .3s ease;
+  min-width: 280px;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast-body { flex: 1; }
+.toast-title { font-weight: 600; }
+.toast-msg { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.toast-close { cursor: pointer; color: var(--text-muted); font-size: 16px; padding: 2px; }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: rgba(12,18,35,0.98); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px; width: 520px; max-width: 95vw;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-close { cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; padding: 4px; }
+.modal-close:hover { color: var(--text); }
+.modal-section { margin-bottom: 18px; }
+.modal-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+.modal-value { font-size: 14px; line-height: 1.6; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+/* ─── DONUT ─── */
+.donut-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+.donut-center {
+  position: absolute; text-align: center;
+  font-size: 24px; font-weight: 800; line-height: 1;
+}
+.donut-center-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+
+/* ─── TABLE ─── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-size: 11px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 11px 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* ─── RESPONSIVE OVERRIDE ─── */
+@media (max-width: 1300px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-chart { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-240px); width: 240px; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .grid-main { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">AI</div>
+    <div class="logo-text">Insight<span>AI</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Main</div>
+    <div class="nav-item active" onclick="navigate('dashboard',this)">
+      <span class="nav-icon">⊞</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('insights',this)">
+      <span class="nav-icon">💡</span> Insights Feed
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item" onclick="navigate('meetings',this)">
+      <span class="nav-icon">📅</span> Meeting Briefs
+    </div>
+    <div class="nav-item" onclick="navigate('upload',this)">
+      <span class="nav-icon">⬆</span> Upload & Process
+    </div>
+    <div class="nav-item" onclick="navigate('analytics',this)">
+      <span class="nav-icon">📊</span> Analytics
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Intelligence</div>
+    <div class="nav-item" onclick="navigate('chat',this)">
+      <span class="nav-icon">🤖</span> AI Assistant
+    </div>
+    <div class="nav-item" onclick="navigate('notifications',this)">
+      <span class="nav-icon">🔔</span> Notifications
+      <span class="nav-badge red">5</span>
+    </div>
+    <div class="nav-item" onclick="navigate('executive',this)">
+      <span class="nav-icon">👔</span> Exec Briefing
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Settings</div>
+    <div class="nav-item" onclick="showToast('⚙️','Settings','Opening preferences...')">
+      <span class="nav-icon">⚙️</span> Preferences
+    </div>
+    <div class="nav-item" onclick="showToast('🔗','Integrations','Connecting to M365...')">
+      <span class="nav-icon">🔗</span> Integrations
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="showToast('👤','Profile','Priyanka Mali · Senior Analyst')">
+      <div class="user-avatar">PM</div>
+      <div class="user-info">
+        <div class="user-name">Priyanka Mali</div>
+        <div class="user-role">Senior Analyst</div>
+      </div>
+      <span style="color:var(--text-muted);font-size:14px">⋮</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="icon-btn" onclick="toggleSidebar()" title="Toggle menu" style="display:none;font-size:18px" id="menuBtn">☰</div>
+      <div>
+        <div class="header-title" id="headerTitle">
+          Dashboard <span id="headerSub">Good morning, Priyanka ☀️</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search insights, meetings, files..." id="searchInput" oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="header-actions">
+      <div class="icon-btn" title="Refresh" onclick="handleRefresh()">↻</div>
+      <div class="icon-btn" title="Notifications" onclick="navigate('notifications',null)">
+        🔔<div class="notif-dot"></div>
+      </div>
+      <div class="icon-btn" title="Theme">🌙</div>
+      <button class="btn btn-primary" onclick="openGenerateBriefing()">
+        ✦ Generate Brief
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="page-section active" id="page-dashboard">
+
+      <div class="status-row">
+        <div class="status-pill"><div class="pulse green"></div> M365 Connected</div>
+        <div class="status-pill"><div class="pulse blue"></div> AI Engine Active</div>
+        <div class="status-pill"><div class="pulse yellow"></div> Viva Engage Syncing</div>
+        <div class="status-pill"><div class="pulse green"></div> 247 Items Processed Today</div>
+      </div>
+
+      <!-- METRIC CARDS -->
+      <div class="grid grid-4" style="margin-bottom:22px">
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#3b82f6,#60a5fa);--icon-bg:rgba(59,130,246,0.15)">
+          <div class="metric-icon">📧</div>
+          <div class="metric-value">1,284</div>
+          <div class="metric-label">Emails Summarized</div>
+          <div class="metric-change up">▲ 18% this week</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#8b5cf6,#a78bfa);--icon-bg:rgba(139,92,246,0.15)">
+          <div class="metric-icon">📊</div>
+          <div class="metric-value">346</div>
+          <div class="metric-label">PPTs Analyzed</div>
+          <div class="metric-change up">▲ 24% this week</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#06b6d4,#22d3ee);--icon-bg:rgba(6,182,212,0.15)">
+          <div class="metric-icon">🎙️</div>
+          <div class="metric-value">89</div>
+          <div class="metric-label">Meetings Briefed</div>
+          <div class="metric-change up">▲ 9% this week</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#10b981,#34d399);--icon-bg:rgba(16,185,129,0.15)">
+          <div class="metric-icon">💬</div>
+          <div class="metric-value">2,451</div>
+          <div class="metric-label">Viva Posts Indexed</div>
+          <div class="metric-change down">▼ 3% this week</div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID -->
+      <div class="grid grid-main" style="margin-bottom:22px">
+        <!-- INSIGHTS FEED -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔥 Top Insights · Today</span>
+            <div style="display:flex;gap:8px">
+              <div class="tab active" style="padding:4px 12px;font-size:12px" onclick="filterInsights('all',this)">All</div>
+              <div class="tab" style="padding:4px 12px;font-size:12px" onclick="filterInsights('email',this)">Email</div>
+              <div class="tab" style="padding:4px 12px;font-size:12px" onclick="filterInsights('meeting',this)">Meetings</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding-top:12px" id="insightsFeed">
+            <!-- dynamically rendered -->
+          </div>
+        </div>
+
+        <!-- AI CHAT -->
+        <div class="card" style="display:flex;flex-direction:column">
+          <div class="card-header">
+            <span class="card-title">🤖 AI Assistant</span>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green)">
+              <div class="pulse green" style="animation-name:pulse;"></div> Online
+            </div>
+          </div>
+          <div class="chat-suggestions">
+            <div class="suggestion-chip" onclick="sendChip(this)">Summarize today</div>
+            <div class="suggestion-chip" onclick="sendChip(this)">Urgent emails</div>
+            <div class="suggestion-chip" onclick="sendChip(this)">Next meeting prep</div>
+          </div>
+          <div class="chat-panel">
+            <div class="chat-messages" id="chatMessages">
+              <div class="msg ai">
+                <div class="msg-avatar ai">✦</div>
+                <div>
+                  <div class="msg-bubble">Hello Priyanka! I've analyzed <strong>247 items</strong> from your M365 environment today. Here's what needs your attention: 3 urgent emails, 2 meetings this afternoon, and a PPT deck from the Strategy team flagged as high priority. How can I help?</div>
+                  <div class="msg-time">9:02 AM</div>
+                </div>
+              </div>
+              <div class="msg user">
+                <div class="msg-avatar user">PM</div>
+                <div>
+                  <div class="msg-bubble">What are the key decisions from yesterday's leadership call?</div>
+                  <div class="msg-time">9:04 AM</div>
+                </div>
+              </div>
+              <div class="msg ai">
+                <div class="msg-avatar ai">✦</div>
+                <div>
+                  <div class="msg-bubble">From the <strong>Leadership Sync — May 7</strong>:<br><br>
+                  1. <strong>Q3 budget approved</strong> at $4.2M (+12% YoY)<br>
+                  2. <strong>AI adoption KPI</strong> set at 80% org coverage by July<br>
+                  3. <strong>Hiring freeze lifted</strong> for tech roles only<br>
+                  4. Next check-in: May 14, 10 AM IST<br><br>
+                  Would you like me to generate a follow-up action list?</div>
+                  <div class="msg-time">9:04 AM</div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-row">
+              <input class="chat-input" id="chatInput" type="text" placeholder="Ask InsightAI anything..." onkeydown="if(event.key==='Enter')sendMessage()">
+              <button class="chat-send" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid grid-chart" style="margin-bottom:22px">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📈 Insight Volume — Last 7 Days</span>
+            <span style="font-size:12px;color:var(--text-muted)">Updated 2 min ago</span>
+          </div>
+          <div class="card-body">
+            <canvas id="lineChart" height="200"></canvas>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Emails</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>PPTs</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Meetings</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Viva Posts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🗂️ Content Breakdown</span>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;align-items:center">
+            <div class="donut-wrap">
+              <canvas id="donutChart" width="200" height="200"></canvas>
+              <div class="donut-center">
+                4,170
+                <div class="donut-center-sub">Total Items</div>
+              </div>
+            </div>
+            <div class="chart-legend" style="justify-content:center;margin-top:16px">
+              <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Email 31%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>PPT 8%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Meetings 2%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Viva 59%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW -->
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📋 Upcoming Meetings</span>
+            <span class="btn btn-ghost" style="font-size:11.5px;padding:5px 12px" onclick="navigate('meetings',null)">View All →</span>
+          </div>
+          <div class="card-body" style="padding-top:10px" id="upcomingMeetings"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📤 Recent Uploads</span>
+            <span class="btn btn-ghost" style="font-size:11.5px;padding:5px 12px" onclick="navigate('upload',null)">Upload →</span>
+          </div>
+          <div class="card-body" style="padding-top:8px" id="recentUploads"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ INSIGHTS PAGE ═══ -->
+    <div class="page-section" id="page-insights">
+      <div class="tabs" id="insightsTabs">
+        <div class="tab active" onclick="filterInsightsPage('all',this)">All (47)</div>
+        <div class="tab" onclick="filterInsightsPage('email',this)">📧 Email (18)</div>
+        <div class="tab" onclick="filterInsightsPage('ppt',this)">📊 PPT (9)</div>
+        <div class="tab" onclick="filterInsightsPage('meeting',this)">🎙️ Meetings (12)</div>
+        <div class="tab" onclick="filterInsightsPage('viva',this)">💬 Viva (8)</div>
+        <div class="tab" onclick="filterInsightsPage('urgent',this)">🚨 Urgent (6)</div>
+      </div>
+      <div class="card">
+        <div class="card-body" id="insightsPageFeed" style="padding-bottom:8px"></div>
+      </div>
+    </div>
+
+    <!-- ═══ MEETINGS PAGE ═══ -->
+    <div class="page-section" id="page-meetings">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="font-size:13px;color:var(--text-muted)">4 meetings today · 2 require prep</div>
+        <button class="btn btn-primary" onclick="openGenerateBriefing()">✦ Generate Briefing</button>
+      </div>
+      <div id="meetingCards"></div>
+    </div>
+
+    <!-- ═══ UPLOAD PAGE ═══ -->
+    <div class="page-section" id="page-upload">
+      <div class="grid grid-2" style="margin-bottom:22px">
+        <div>
+          <div class="upload-zone" id="uploadZone"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handleDrop(event)"
+            onclick="showToast('📁','File Picker','Select files to upload for AI processing...')">
+            <div class="upload-icon">📁</div>
+            <div class="upload-title">Drop files or click to upload</div>
+            <div class="upload-sub">InsightAI will automatically analyze and summarize your content</div>
+            <div class="upload-types">
+              <span class="upload-type-badge">.eml .msg</span>
+              <span class="upload-type-badge">.pptx .ppt</span>
+              <span class="upload-type-badge">.docx .doc</span>
+              <span class="upload-type-badge">.mp4 .m4a</span>
+              <span class="upload-type-badge">.pdf</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚡ Processing Queue</span></div>
+          <div class="card-body" style="padding-top:10px" id="processingQueue"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📂 All Processed Files</span>
+          <span style="font-size:12px;color:var(--text-muted)">32 files total</span>
+        </div>
+        <div class="card-body" style="padding-top:10px;overflow-x:auto">
+          <table class="data-table" id="allFilesTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ANALYTICS PAGE ═══ -->
+    <div class="page-section" id="page-analytics">
+      <div class="grid grid-4" style="margin-bottom:22px">
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#3b82f6,#60a5fa);--icon-bg:rgba(59,130,246,0.15)">
+          <div class="metric-icon">⏱️</div>
+          <div class="metric-value">4.2h</div>
+          <div class="metric-label">Avg Time Saved / Day</div>
+          <div class="metric-change up">▲ 31% MoM</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#10b981,#34d399);--icon-bg:rgba(16,185,129,0.15)">
+          <div class="metric-icon">🎯</div>
+          <div class="metric-value">94.7%</div>
+          <div class="metric-label">Summarization Accuracy</div>
+          <div class="metric-change up">▲ 2.1% MoM</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#f59e0b,#fbbf24);--icon-bg:rgba(245,158,11,0.15)">
+          <div class="metric-icon">📣</div>
+          <div class="metric-value">87%</div>
+          <div class="metric-label">User Adoption Rate</div>
+          <div class="metric-change up">▲ 8% MoM</div>
+        </div>
+        <div class="metric-card" style="--card-accent:linear-gradient(90deg,#ef4444,#f87171);--icon-bg:rgba(239,68,68,0.15)">
+          <div class="metric-icon">🏆</div>
+          <div class="metric-value">12.3x</div>
+          <div class="metric-label">ROI Multiplier</div>
+          <div class="metric-change up">▲ projected Q3</div>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Weekly Processing Volume</span></div>
+          <div class="card-body"><canvas id="barChart" height="260"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">🏅 Top Contributors (Viva)</span></div>
+          <div class="card-body" style="padding-top:10px" id="topContributors"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CHAT PAGE ═══ -->
+    <div class="page-section" id="page-chat">
+      <div class="card" style="max-width:760px;margin:0 auto">
+        <div class="card-header" style="padding:20px 24px 0">
+          <span class="card-title">🤖 InsightAI Chat</span>
+          <div style="font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px">
+            <div class="pulse green"></div> Active · GPT-4o powered
+          </div>
+        </div>
+        <div class="chat-suggestions" style="padding:14px 20px 0">
+          <div class="suggestion-chip" onclick="sendChipFull(this)">Summarize today's emails</div>
+          <div class="suggestion-chip" onclick="sendChipFull(this)">What are my action items?</div>
+          <div class="suggestion-chip" onclick="sendChipFull(this)">Who messaged me urgently?</div>
+          <div class="suggestion-chip" onclick="sendChipFull(this)">Prep for 3pm meeting</div>
+          <div class="suggestion-chip" onclick="sendChipFull(this)">Executive summary for CFO</div>
+        </div>
+        <div class="chat-panel" style="height:520px">
+          <div class="chat-messages" id="chatMessagesFull">
+            <div class="msg ai">
+              <div class="msg-avatar ai">✦</div>
+              <div>
+                <div class="msg-bubble">Hi Priyanka! I'm your InsightAI assistant, connected to your full M365 environment including Outlook, Teams, SharePoint, and Viva Engage.<br><br>I can summarize emails, brief you on meetings, extract action items from PPTs, and surface trends from internal communities. What would you like to know?</div>
+                <div class="msg-time">Just now</div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chatInputFull" type="text" placeholder="Ask anything about your enterprise data..." onkeydown="if(event.key==='Enter')sendMessageFull()">
+            <button class="chat-send" onclick="sendMessageFull()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NOTIFICATIONS PAGE ═══ -->
+    <div class="page-section" id="page-notifications">
+      <div class="grid grid-main">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔔 All Notifications</span>
+            <button class="btn btn-ghost" style="font-size:11.5px;padding:5px 12px" onclick="markAllRead()">Mark all read</button>
+          </div>
+          <div class="card-body" style="padding-top:10px" id="notifList"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚡ Quick Actions</span></div>
+          <div class="card-body" style="padding-top:12px">
+            <div style="display:flex;flex-direction:column;gap:10px" id="quickActions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EXECUTIVE BRIEFING PAGE ═══ -->
+    <div class="page-section" id="page-executive">
+      <div class="grid grid-2" style="margin-bottom:22px">
+        <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.08));border-color:rgba(139,92,246,0.2)">
+          <div class="card-body">
+            <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Executive Intelligence Brief</div>
+            <div style="font-size:22px;font-weight:800;margin-bottom:6px">Thursday, May 8, 2026</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.7">
+              AI-generated summary of 247 items across your organization today.<br>
+              <strong style="color:var(--yellow)">3 items require executive attention.</strong>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px">
+              <button class="btn btn-primary" onclick="showToast('📧','Brief Sent','Executive summary delivered to your inbox')">📤 Email Brief</button>
+              <button class="btn btn-ghost" onclick="showToast('🖨️','Print','Preparing PDF export...')">🖨️ Export PDF</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 KPI Snapshot</span></div>
+          <div class="card-body">
+            <canvas id="execChart" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 Executive Summary Points</span></div>
+        <div class="card-body" style="padding-top:8px" id="execSummary"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Generate Meeting Briefing</div>
+      <div class="modal-close" onclick="closeModal()">×</div>
+    </div>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────
+const INSIGHTS = [
+  { id:1, type:'email', title:'CFO Budget Approval Required', summary:'Sarah Chen requests immediate sign-off on $840K cloud infrastructure budget for Q3. Deadline: EOD today.', tag:'urgent', time:'9:15 AM', priority:'high', from:'Sarah Chen · CFO Office' },
+  { id:2, type:'meeting', title:'Leadership Sync — Key Decisions', summary:'AI adoption KPI set at 80% coverage, Q3 budget +12% YoY, hiring freeze lifted for tech roles only.', tag:'meeting', time:'8:52 AM', priority:'med', from:'15 attendees' },
+  { id:3, type:'ppt', title:'Strategy Deck: FY26 Roadmap', summary:'Product strategy reveals 3 new AI capabilities planned, 2 acquisitions under NDA review, market expansion to APAC.', tag:'ppt', time:'8:30 AM', priority:'med', from:'Strategy Team' },
+  { id:4, type:'email', title:'Client Escalation: Infosys Account', summary:'Account manager reports SLA breach (4h downtime). Executive escalation required. Client meeting requested for May 10.', tag:'urgent', time:'8:10 AM', priority:'high', from:'Raj Kumar · Account Mgmt' },
+  { id:5, type:'viva', title:'Trending: AI Tools Adoption Thread', summary:'1,200+ engagements on "AI in daily work" thread. 78% positive sentiment. Key ask: more training sessions.', tag:'viva', time:'7:45 AM', priority:'low', from:'Viva Engage Community' },
+  { id:6, type:'email', title:'Board Presentation Feedback', summary:'Chairperson Meera Nair responded positively to Q2 results. Requests deeper sustainability data for next session.', tag:'email', time:'7:30 AM', priority:'med', from:'Meera Nair · Chairperson' },
+  { id:7, type:'meeting', title:'Product Review — Sprint 24 Demo', summary:'Team demoed 4 features. 2 approved for release. Performance optimization flagged as blocker. Next sprint planning May 12.', tag:'meeting', time:'7:00 AM', priority:'low', from:'Product + Engineering' },
+  { id:8, type:'email', title:'Compliance Alert: GDPR Audit Notice', summary:'Data protection officer flagged 3 non-compliant data flows. Remediation plan required by May 15.', tag:'urgent', time:'Yesterday', priority:'high', from:'DPO Office' },
+];
+
+const MEETINGS = [
+  { title:'Q2 Business Review', time:'11:00 AM – 12:30 PM', attendees:'VP Strategy, CFO, CTO + 8 more', status:'live', color:'#ef4444', points:['Review Q2 revenue vs $48M target','Discuss 3 underperforming accounts','Approve Q3 budget reallocation of $2.1M','AI transformation progress (currently at 62%)'] },
+  { title:'Client QBR — Infosys', time:'2:00 PM – 3:00 PM', attendees:'Account Manager, Solutions Lead, Client VP', status:'upcoming', color:'#f59e0b', points:['Address May 7 SLA breach — root cause analysis ready','Propose remediation credit ($50K)','Present new AI monitoring stack','Roadmap for H2 2026 engagement renewal'] },
+  { title:'AI Platform Architecture Review', time:'3:30 PM – 4:30 PM', attendees:'CTO, Principal Architects, AI Lead', status:'upcoming', color:'#8b5cf6', points:['Review LLM orchestration design','Evaluate vector DB options: Pinecone vs Weaviate','Decide on on-prem vs cloud inference','Security review of RAG pipeline'] },
+  { title:'All-Hands: May Edition', time:'5:00 PM – 6:00 PM', attendees:'All 1,200+ employees (virtual)', status:'prep', color:'#10b981', points:['CEO to present Q2 results and culture awards','Announce AI Accelerator cohort winners','New benefits policy effective June 1','Open Q&A session with leadership'] },
+];
+
+const NOTIFICATIONS = [
+  { icon:'🚨', bg:'rgba(239,68,68,0.15)', title:'Urgent: CFO Sign-off Required', desc:'Budget approval deadline in 3 hours. Sarah Chen flagged this as critical.', time:'2 min ago', unread:true },
+  { icon:'📅', bg:'rgba(139,92,246,0.15)', title:'Q2 Business Review starting in 45 min', desc:'11 participants confirmed. Deck uploaded and summarized.', time:'8 min ago', unread:true },
+  { icon:'🤖', bg:'rgba(59,130,246,0.15)', title:'InsightAI processed 24 new items', desc:'3 urgent emails, 1 escalation, 5 meeting notes from Teams.', time:'15 min ago', unread:true },
+  { icon:'💬', bg:'rgba(16,185,129,0.15)', title:'Viva Engage: New trending thread', desc:'"Remote work policy 2026" gaining traction — 340 reactions.', time:'32 min ago', unread:true },
+  { icon:'⚠️', bg:'rgba(245,158,11,0.15)', title:'GDPR Compliance Deadline Approaching', desc:'7 days remaining. 3 action items unresolved.', time:'1h ago', unread:true },
+  { icon:'📊', bg:'rgba(249,115,22,0.15)', title:'FY26 Strategy Deck analyzed', desc:'12 key insights extracted. 4 action items flagged for leadership.', time:'2h ago', unread:false },
+  { icon:'✅', bg:'rgba(16,185,129,0.15)', title:'Sprint 24 notes processed', desc:'Summary and action items available in Meeting Briefs.', time:'3h ago', unread:false },
+  { icon:'📧', bg:'rgba(59,130,246,0.15)', title:'156 emails summarized overnight', desc:'AI confidence score: 96.2%. 8 items flagged for review.', time:'8h ago', unread:false },
+];
+
+const UPLOADS = [
+  { icon:'📧', name:'Inbox_May_2026.mbox', size:'14.2 MB', type:'Email Archive', status:'done', progress:100 },
+  { icon:'📊', name:'FY26_Strategy_v3.pptx', size:'8.7 MB', type:'PowerPoint', status:'done', progress:100 },
+  { icon:'🎙️', name:'Leadership_Sync_May7.m4a', size:'46.1 MB', type:'Meeting Recording', status:'proc', progress:68 },
+  { icon:'📄', name:'Q2_Board_Report.pdf', size:'3.1 MB', type:'PDF Document', status:'proc', progress:35 },
+  { icon:'📝', name:'Sprint24_Notes.docx', size:'0.9 MB', type:'Word Document', status:'queue', progress:0 },
+];
+
+const EXEC_POINTS = [
+  { text:'Q2 revenue tracking at <strong>$44.7M vs $48M target (93%)</strong>. Three underperforming accounts identified: Infosys, TCS Mobility, and Wipro Cloud. Recovery plans in review.' },
+  { text:'<strong>AI transformation at 62% adoption</strong> across 8,200 employees. Lagging departments: Legal (41%), Finance (38%). Accelerated training program proposed for June.' },
+  { text:'<strong>Critical SLA breach at Infosys account</strong>. 4-hour downtime on May 7. Remediation credit of $50K recommended. Account at risk of non-renewal (ARR: $3.2M).' },
+  { text:'GDPR audit notice received. <strong>3 non-compliant data flows</strong> must be remediated by May 15. DPO recommends emergency task force. Potential fine exposure: €2.4M.' },
+  { text:'<strong>Hiring approved for 47 tech roles</strong> in AI, Data Engineering, and Cloud. Talent acquisition to begin June 1. Budget impact: $8.9M annualized.' },
+  { text:'Viva Engage sentiment score: <strong>78% positive this week</strong> (+4 pts). Top theme: "AI tools in daily work." Employee NPS at 67 — highest since Q4 2024.' },
+];
+
+const CONTRIBUTORS = [
+  { name:'Arjun Mehta', role:'AI Practice Lead', posts:234, reactions:1840 },
+  { name:'Divya Krishnan', role:'Data Engineering', posts:189, reactions:1560 },
+  { name:'Rohan Sharma', role:'Cloud Architect', posts:156, reactions:1240 },
+  { name:'Priya Nambiar', role:'Product Strategy', posts:143, reactions:1120 },
+  { name:'Karan Bose', role:'Security & Compliance', posts:118, reactions:890 },
+];
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard:'Dashboard', insights:'Insights Feed', meetings:'Meeting Briefs',
+  upload:'Upload & Process', analytics:'Analytics', chat:'AI Assistant',
+  notifications:'Notifications', executive:'Executive Briefing'
+};
+const PAGE_SUBS = {
+  dashboard:'Good morning, Priyanka ☀️',
+  insights:'47 new insights today',
+  meetings:'4 meetings · 2 require prep',
+  upload:'32 files processed',
+  analytics:'May 2026 · Live data',
+  chat:'GPT-4o powered',
+  notifications:'5 unread',
+  executive:'Leadership view'
+};
+
+function navigate(page, el) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active');
+    });
+  }
+  document.getElementById('headerTitle').innerHTML = PAGE_TITLES[page] + ' <span id="headerSub">' + PAGE_SUBS[page] + '</span>';
+  renderPage(page);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'insights') renderInsightsPage();
+  if (page === 'meetings') renderMeetings();
+  if (page === 'upload') renderUpload();
+  if (page === 'analytics') { renderAnalytics(); setTimeout(drawBarChart,100); }
+  if (page === 'notifications') renderNotifications();
+  if (page === 'executive') { renderExecutive(); setTimeout(drawExecChart,100); }
+}
+
+// ──────────────────────────────────────────────
+// RENDER DASHBOARD
+// ──────────────────────────────────────────────
+function renderDashboard() {
+  renderInsightsFeed('insightsFeed', INSIGHTS.slice(0,5));
+  renderMeetingsMini();
+  renderUploadsMini();
+  setTimeout(() => { drawLineChart(); drawDonutChart(); }, 80);
+}
+
+const SOURCE_ICONS = { email:'📧', ppt:'📊', meeting:'🎙️', viva:'💬' };
+const SOURCE_COLORS = { email:'rgba(59,130,246,0.15)', ppt:'rgba(249,115,22,0.15)', meeting:'rgba(139,92,246,0.15)', viva:'rgba(16,185,129,0.15)' };
+
+function renderInsightsFeed(containerId, items) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = items.map(i => `
+    <div class="insight-item" onclick="openInsightModal(${i.id})">
+      <div class="insight-source" style="background:${SOURCE_COLORS[i.type]}">${SOURCE_ICONS[i.type]}</div>
+      <div class="insight-content">
+        <div class="insight-title">${i.title}</div>
+        <div class="insight-summary">${i.summary}</div>
+        <div class="insight-meta">
+          <span class="insight-tag tag-${i.tag === 'urgent' ? 'urgent' : i.type}">${i.tag.toUpperCase()}</span>
+          <span class="insight-time">${i.time}</span>
+          <span class="insight-time" style="color:var(--text-dim)">· ${i.from}</span>
+        </div>
+      </div>
+      <div class="insight-priority priority-${i.priority}"></div>
+    </div>
+  `).join('');
+}
+
+function renderMeetingsMini() {
+  const el = document.getElementById('upcomingMeetings');
+  if (!el) return;
+  el.innerHTML = MEETINGS.map(m => `
+    <div class="briefing-card" onclick="navigate('meetings',null)">
+      <div class="briefing-header">
+        <div class="briefing-dot" style="background:${m.color}"></div>
+        <div class="briefing-info">
+          <div class="briefing-title">${m.title}</div>
+          <div class="briefing-sub">${m.attendees.split(',')[0]} + more</div>
+        </div>
+        <div class="briefing-time">${m.time.split('–')[0].trim()}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderUploadsMini() {
+  const el = document.getElementById('recentUploads');
+  if (!el) return;
+  el.innerHTML = UPLOADS.map(u => `
+    <div class="file-item">
+      <div class="file-icon">${u.icon}</div>
+      <div class="file-info">
+        <div class="file-name">${u.name}</div>
+        <div class="file-meta">${u.type} · ${u.size}</div>
+        ${u.status === 'proc' ? `<div class="progress-bar"><div class="progress-fill" style="width:${u.progress}%"></div></div>` : ''}
+      </div>
+      <div class="file-status status-${u.status}">${u.status === 'done' ? 'Done' : u.status === 'proc' ? `${u.progress}%` : 'Queued'}</div>
+    </div>
+  `).join('');
+}
+
+// ──────────────────────────────────────────────
+// RENDER INSIGHTS PAGE
+// ──────────────────────────────────────────────
+function renderInsightsPage() {
+  renderInsightsFeed('insightsPageFeed', INSIGHTS);
+}
+
+function filterInsightsPage(type, el) {
+  document.querySelectorAll('#insightsTabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = type === 'all' ? INSIGHTS : INSIGHTS.filter(i => i.type === type || i.tag === type);
+  renderInsightsFeed('insightsPageFeed', filtered.length ? filtered : INSIGHTS);
+}
+
+function filterInsights(type, el) {
+  document.querySelectorAll('.card-header .tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const filtered = type === 'all' ? INSIGHTS.slice(0,5) : INSIGHTS.filter(i=>i.type===type).slice(0,5);
+  renderInsightsFeed('insightsFeed', filtered.length ? filtered : INSIGHTS.slice(0,5));
+}
+
+// ──────────────────────────────────────────────
+// RENDER MEETINGS
+// ──────────────────────────────────────────────
+function renderMeetings() {
+  const el = document.getElementById('meetingCards');
+  if (!el) return;
+  el.innerHTML = MEETINGS.map(m => `
+    <div class="briefing-card">
+      <div class="briefing-header">
+        <div class="briefing-dot" style="background:${m.color};width:12px;height:12px;${m.status==='live'?'box-shadow:0 0 10px '+m.color:''}"></div>
+        <div class="briefing-info">
+          <div class="briefing-title">${m.title} ${m.status==='live'?'<span style="font-size:10.5px;background:rgba(239,68,68,0.2);color:#f87171;padding:2px 8px;border-radius:99px;margin-left:6px">● LIVE</span>':''}</div>
+          <div class="briefing-sub">🕐 ${m.time} · 👥 ${m.attendees}</div>
+        </div>
+        <div class="briefing-time">${m.status==='upcoming'?'Soon':m.status==='live'?'Now':'Today'}</div>
+      </div>
+      <div class="briefing-body">
+        <div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px">AI-Generated Agenda</div>
+        ${m.points.map(p=>`<div class="briefing-point">${p}</div>`).join('')}
+      </div>
+      <div class="briefing-actions">
+        <button class="btn-xs primary" onclick="showToast('📋','Brief Ready','Full briefing package generated for '+encodeURIComponent('${m.title}'))">📋 Full Briefing</button>
+        <button class="btn-xs secondary" onclick="showToast('🤖','AI Prep','Generating talking points and Q&A prep...')">🤖 AI Prep</button>
+        <button class="btn-xs secondary" onclick="showToast('📤','Shared','Briefing shared with meeting attendees')">📤 Share</button>
+        <button class="btn-xs secondary" onclick="showToast('📅','Calendar','Opening in calendar...')">📅 Join</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ──────────────────────────────────────────────
+// RENDER UPLOAD
+// ──────────────────────────────────────────────
+function renderUpload() {
+  const queue = document.getElementById('processingQueue');
+  if (queue) {
+    queue.innerHTML = UPLOADS.map(u => `
+      <div class="file-item" style="margin-bottom:8px">
+        <div class="file-icon">${u.icon}</div>
+        <div class="file-info">
+          <div class="file-name">${u.name}</div>
+          <div class="file-meta">${u.size} · ${u.type}</div>
+          ${u.status === 'proc' ? `<div class="progress-bar"><div class="progress-fill" style="width:${u.progress}%"></div></div>` : ''}
+        </div>
+        <div class="file-status status-${u.status}">${u.status === 'done' ? '✓ Done' : u.status === 'proc' ? u.progress+'%' : 'Queued'}</div>
+      </div>
+    `).join('');
+  }
+
+  const table = document.getElementById('allFilesTable');
+  if (table) {
+    const rows = [
+      ['📧','Q1_Email_Archive.mbox','Email','126 MB','2,180 summaries','May 1','✓ Done'],
+      ['📊','Board_Presentation_Q2.pptx','PowerPoint','12.4 MB','24 insights','May 3','✓ Done'],
+      ['🎙️','Town_Hall_April.mp4','Video','1.2 GB','Transcript + 18 AIs','May 4','✓ Done'],
+      ['📄','HR_Policy_2026.pdf','PDF','4.1 MB','12 key clauses','May 5','✓ Done'],
+      ['📝','Sprint23_Retro.docx','Word','0.7 MB','8 action items','May 6','✓ Done'],
+      ['📊','FY26_Strategy_v3.pptx','PowerPoint','8.7 MB','12 insights','May 7','✓ Done'],
+      ['🎙️','Leadership_Sync_May7.m4a','Audio','46 MB','Processing...','May 8','⏳ 68%'],
+      ['📄','Q2_Board_Report.pdf','PDF','3.1 MB','Processing...','May 8','⏳ 35%'],
+    ];
+    table.innerHTML = `<thead><tr><th></th><th>Filename</th><th>Type</th><th>Size</th><th>Output</th><th>Date</th><th>Status</th></tr></thead><tbody>`
+      + rows.map(r => `<tr>${r.map((c,i)=>`<td>${i===6?`<span class="file-status ${c.includes('Done')?'status-done':'status-proc'}">${c}</span>`:c}</td>`).join('')}</tr>`).join('')
+      + `</tbody>`;
+  }
+}
+
+// ──────────────────────────────────────────────
+// RENDER ANALYTICS
+// ──────────────────────────────────────────────
+function renderAnalytics() {
+  const el = document.getElementById('topContributors');
+  if (el) {
+    el.innerHTML = CONTRIBUTORS.map((c,i) => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);${i===CONTRIBUTORS.length-1?'border:none':''}">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(${220+i*30},70%,60%),hsl(${260+i*30},70%,55%));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0">${c.name.split(' ').map(w=>w[0]).join('')}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${c.name}</div>
+          <div style="font-size:11.5px;color:var(--text-muted)">${c.role}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;color:var(--accent)">${c.reactions.toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${c.posts} posts</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// ──────────────────────────────────────────────
+// RENDER NOTIFICATIONS
+// ──────────────────────────────────────────────
+function renderNotifications() {
+  const el = document.getElementById('notifList');
+  if (el) {
+    el.innerHTML = NOTIFICATIONS.map(n => `
+      <div class="notif-item ${n.unread?'unread':''}" onclick="this.classList.remove('unread');showToast('${n.icon}','${n.title.slice(0,30)}...','Opening detail view...')">
+        <div class="notif-icon" style="background:${n.bg}">${n.icon}</div>
+        <div class="notif-text">
+          <div class="notif-title">${n.title}</div>
+          <div class="notif-desc">${n.desc}</div>
+        </div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    `).join('');
+  }
+
+  const qa = document.getElementById('quickActions');
+  if (qa) {
+    const actions = [
+      {icon:'📊',label:'Generate daily brief',color:'var(--accent)'},
+      {icon:'📧',label:'Summarize unread emails',color:'#60a5fa'},
+      {icon:'📅',label:'Prepare for next meeting',color:'#a78bfa'},
+      {icon:'🚨',label:'Show urgent items only',color:'#f87171'},
+      {icon:'📤',label:'Share digest with team',color:'#34d399'},
+      {icon:'🔕',label:'Snooze all notifications',color:'var(--text-muted)'},
+    ];
+    qa.innerHTML = actions.map(a => `
+      <button class="btn btn-ghost" style="justify-content:flex-start;gap:10px;width:100%;padding:10px 16px;border-radius:var(--radius-sm)" onclick="showToast('${a.icon}','Action','${a.label}...')">
+        <span style="font-size:16px">${a.icon}</span>
+        <span style="color:${a.color};font-weight:600">${a.label}</span>
+      </button>
+    `).join('');
+  }
+}
+
+function markAllRead() {
+  document.querySelectorAll('.notif-item').forEach(n => n.classList.remove('unread'));
+  document.querySelector('.notif-dot') && (document.querySelector('.notif-dot').style.display='none');
+  showToast('✅','All Clear','All notifications marked as read');
+}
+
+// ──────────────────────────────────────────────
+// RENDER EXECUTIVE
+// ──────────────────────────────────────────────
+function renderExecutive() {
+  const el = document.getElementById('execSummary');
+  if (el) {
+    el.innerHTML = EXEC_POINTS.map((p,i) => `
+      <div class="exec-item" onclick="showToast('📋','Detail','Opening full analysis...')">
+        <div class="exec-number">${String(i+1).padStart(2,'0')}</div>
+        <div class="exec-text">${p.text}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ──────────────────────────────────────────────
+// CHARTS
+// ──────────────────────────────────────────────
+function drawLineChart() {
+  const canvas = document.getElementById('lineChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth - 40;
+  canvas.height = 200;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const datasets = [
+    { color:'#3b82f6', data:[180,210,195,240,220,180,250] },
+    { color:'#8b5cf6', data:[40,55,48,60,52,44,62] },
+    { color:'#10b981', data:[12,15,18,14,20,10,22] },
+    { color:'#06b6d4', data:[320,380,350,420,400,360,440] },
+  ];
+  const pad = {l:40,r:20,t:20,b:30};
+  const maxVal = 500;
+  const gW = W - pad.l - pad.r;
+  const gH = H - pad.t - pad.b;
+
+  // grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let i=0;i<=4;i++) {
+    const y = pad.t + (gH/4)*i;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font='10px Segoe UI'; ctx.textAlign='right';
+    ctx.fillText(Math.round(maxVal-(maxVal/4)*i), pad.l-6, y+4);
+  }
+  labels.forEach((l,i)=>{
+    const x = pad.l + (gW/(labels.length-1))*i;
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText(l, x, H-8);
+  });
+
+  datasets.forEach(ds => {
+    const pts = ds.data.map((v,i)=>({x: pad.l+(gW/(labels.length-1))*i, y: pad.t+gH*(1-v/maxVal)}));
+    // fill
+    const grad = ctx.createLinearGradient(0,pad.t,0,pad.t+gH);
+    grad.addColorStop(0, ds.color+'44');
+    grad.addColorStop(1, ds.color+'00');
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pad.t+gH);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x, pad.t+gH);
+    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+    // line
+    ctx.beginPath(); ctx.strokeStyle=ds.color; ctx.lineWidth=2;
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+    // dots
+    pts.forEach(p=>{
+      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2);
+      ctx.fillStyle=ds.color; ctx.fill();
+    });
+  });
+}
+
+function drawDonutChart() {
+  const canvas = document.getElementById('donutChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx=100, cy=100, r=80, ir=58;
+  const slices = [
+    {val:31,color:'#3b82f6'},{val:8,color:'#8b5cf6'},
+    {val:2,color:'#10b981'},{val:59,color:'#06b6d4'}
+  ];
+  ctx.clearRect(0,0,200,200);
+  let angle = -Math.PI/2;
+  slices.forEach(s=>{
+    const sweep = (s.val/100)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+sweep);
+    ctx.closePath(); ctx.fillStyle=s.color; ctx.fill();
+    angle+=sweep;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2);
+  ctx.fillStyle='#060a14'; ctx.fill();
+}
+
+function drawBarChart() {
+  const canvas = document.getElementById('barChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth - 40;
+  canvas.height = 260;
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const weeks=['W18','W19','W20','W21','W22'];
+  const groups=[
+    {label:'Emails',color:'#3b82f6',data:[980,1100,1050,1200,1284]},
+    {label:'PPTs',color:'#8b5cf6',data:[280,310,295,330,346]},
+    {label:'Meetings',color:'#10b981',data:[65,72,68,80,89]},
+  ];
+  const pad={l:40,r:20,t:20,b:30};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  const barW=gW/(weeks.length*(groups.length+1));
+  const maxV=1400;
+  ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(gH/4)*i;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='10px Segoe UI';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV-(maxV/4)*i),pad.l-5,y+4);
+  }
+  weeks.forEach((w,wi)=>{
+    const groupX=pad.l+wi*(gW/weeks.length);
+    groups.forEach((g,gi)=>{
+      const x=groupX+gi*(barW+2)+barW/2;
+      const bh=(g.data[wi]/maxV)*gH;
+      const grad=ctx.createLinearGradient(0,pad.t+gH-bh,0,pad.t+gH);
+      grad.addColorStop(0,g.color); grad.addColorStop(1,g.color+'66');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      const rx=x, ry=pad.t+gH-bh, rr=3;
+      ctx.moveTo(rx+rr,ry); ctx.lineTo(rx+barW-rr,ry);
+      ctx.quadraticCurveTo(rx+barW,ry,rx+barW,ry+rr);
+      ctx.lineTo(rx+barW,pad.t+gH); ctx.lineTo(rx,pad.t+gH);
+      ctx.lineTo(rx,ry+rr); ctx.quadraticCurveTo(rx,ry,rx+rr,ry);
+      ctx.fill();
+    });
+    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='10px Segoe UI';ctx.textAlign='center';
+    ctx.fillText(w, groupX+(gW/weeks.length)/2+pad.l/weeks.length, H-8);
+  });
+}
+
+function drawExecChart() {
+  const canvas = document.getElementById('execChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth - 40;
+  canvas.height = 180;
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const kpis=[
+    {label:'Revenue',val:93,color:'#3b82f6'},
+    {label:'AI Adoption',val:62,color:'#8b5cf6'},
+    {label:'Employee NPS',val:67,color:'#10b981'},
+    {label:'Satisfaction',val:84,color:'#06b6d4'},
+    {label:'Compliance',val:78,color:'#f59e0b'},
+  ];
+  const bH=28, gap=10, pad={l:90,r:50,t:10};
+  kpis.forEach((k,i)=>{
+    const y=pad.t+i*(bH+gap);
+    ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='12px Segoe UI';ctx.textAlign='right';
+    ctx.fillText(k.label,pad.l-8,y+bH/2+4);
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.beginPath();ctx.roundRect(pad.l,y,W-pad.l-pad.r,bH,6);ctx.fill();
+    const fillW=(k.val/100)*(W-pad.l-pad.r);
+    const grad=ctx.createLinearGradient(pad.l,0,pad.l+fillW,0);
+    grad.addColorStop(0,k.color+'cc');grad.addColorStop(1,k.color);
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.roundRect(pad.l,y,fillW,bH,6);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 11px Segoe UI';ctx.textAlign='left';
+    ctx.fillText(k.val+'%',pad.l+fillW+6,y+bH/2+4);
+  });
+}
+
+// ──────────────────────────────────────────────
+// CHAT
+// ──────────────────────────────────────────────
+const AI_RESPONSES = {
+  'summarize today': 'Today I processed **247 items**:\n\n• **156 emails** — 3 urgent, 18 flagged\n• **89 meeting notes** from Teams\n• **2 PPT decks** from SharePoint\n• Viva trending threads: 4\n\nTop priority: CFO budget approval deadline at 5PM.',
+  'urgent emails': 'You have **3 urgent emails**:\n\n1. **Sarah Chen (CFO)** — Budget sign-off required by EOD\n2. **Raj Kumar** — Infosys SLA breach escalation\n3. **DPO Office** — GDPR audit response needed by May 15\n\nShall I draft replies for any of these?',
+  'next meeting prep': '**Q2 Business Review** starts in 42 minutes.\n\nKey prep points:\n→ Q2 actuals: $44.7M vs $48M target\n→ 3 underperforming accounts to discuss\n→ AI roadmap update ready\n→ Your speaking slot: 11:25 AM (5 min)\n\nWould you like me to generate talking points?',
+  'default': 'I\'ve analyzed your request across 247 items in your M365 environment. I found **3 relevant insights** that match your query. Shall I elaborate on any specific area?',
+};
+
+function timeNow() {
+  return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+function appendMsg(containerId, isUser, text) {
+  const container = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isUser?'user':'ai');
+  div.innerHTML = isUser
+    ? `<div class="msg-avatar user">PM</div><div><div class="msg-bubble">${text}</div><div class="msg-time">${timeNow()}</div></div>`
+    : `<div class="msg-avatar ai">✦</div><div><div class="msg-bubble">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div><div class="msg-time">${timeNow()}</div></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping(containerId) {
+  const container = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typing-'+containerId;
+  div.innerHTML = `<div class="msg-avatar ai">✦</div><div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function hideTyping(containerId) {
+  const t = document.getElementById('typing-'+containerId);
+  if (t) t.remove();
+}
+
+function getAIResponse(text) {
+  const lower = text.toLowerCase();
+  for (const key of Object.keys(AI_RESPONSES)) {
+    if (key !== 'default' && lower.includes(key)) return AI_RESPONSES[key];
+  }
+  return AI_RESPONSES['default'];
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  appendMsg('chatMessages', true, text);
+  showTyping('chatMessages');
+  setTimeout(()=>{ hideTyping('chatMessages'); appendMsg('chatMessages', false, getAIResponse(text)); }, 1200);
+}
+
+function sendMessageFull() {
+  const input = document.getElementById('chatInputFull');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  appendMsg('chatMessagesFull', true, text);
+  showTyping('chatMessagesFull');
+  setTimeout(()=>{ hideTyping('chatMessagesFull'); appendMsg('chatMessagesFull', false, getAIResponse(text)); }, 1400);
+}
+
+function sendChip(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendMessage();
+}
+
+function sendChipFull(el) {
+  document.getElementById('chatInputFull').value = el.textContent;
+  sendMessageFull();
+}
+
+// ──────────────────────────────────────────────
+// INSIGHT MODAL
+// ──────────────────────────────────────────────
+function openInsightModal(id) {
+  const ins = INSIGHTS.find(i=>i.id===id);
+  if (!ins) return;
+  document.getElementById('modalTitle').textContent = ins.title;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-section">
+      <div class="modal-label">Source</div>
+      <div class="modal-value">${SOURCE_ICONS[ins.type]} ${ins.from} · ${ins.time}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">AI Summary</div>
+      <div class="modal-value">${ins.summary}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Recommended Actions</div>
+      <div class="modal-value">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <div class="briefing-point">Review and respond by EOD</div>
+          <div class="briefing-point">Flag to relevant stakeholders</div>
+          <div class="briefing-point">Add to executive briefing</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Priority</div>
+      <div class="insight-tag tag-${ins.tag === 'urgent'?'urgent':ins.type}" style="display:inline-flex">${ins.priority.toUpperCase()}</div>
+    </div>
+  `;
+  document.getElementById('modalActions').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    <button class="btn btn-primary" onclick="showToast('🤖','AI Action','Generating response draft...');closeModal()">🤖 AI Respond</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openGenerateBriefing() {
+  document.getElementById('modalTitle').textContent = '✦ Generate AI Briefing';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <div class="modal-label">Briefing Type</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          ${['Meeting Prep','Executive Summary','Daily Digest','Incident Report','Client Brief'].map(t=>`<div class="tab" style="cursor:pointer" onclick="this.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${t}</div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="modal-label">Include Sources</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          ${['📧 Emails','📊 PPTs','🎙️ Meetings','💬 Viva Engage','📄 Documents'].map(s=>`<div class="status-pill" style="cursor:pointer;transition:.2s" onclick="this.style.borderColor=this.style.borderColor?'':'var(--accent)'">${s}</div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="modal-label">Time Range</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          ${['Today','Last 7 days','Last 30 days','Custom'].map((t,i)=>`<div class="tab ${i===0?'active':''}" style="cursor:pointer" onclick="this.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${t}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modalActions').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="closeModal();setTimeout(()=>showToast('✦','Brief Generated','Your AI briefing is ready — 8 insights compiled'),300)">✦ Generate Now</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
+function showToast(icon, title, msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<div class="toast-icon">${icon}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div><div class="toast-close" onclick="this.parentElement.remove()">×</div>`;
+  container.appendChild(toast);
+  setTimeout(()=>toast.style.cssText='opacity:0;transform:translateX(30px);transition:.3s', 3500);
+  setTimeout(()=>toast.remove(), 3900);
+}
+
+// ──────────────────────────────────────────────
+// MISC
+// ──────────────────────────────────────────────
+function handleSearch(v) {
+  if (v.length > 2) showToast('🔍','Search','Searching for: "'+v+'"...');
+}
+
+function handleRefresh() {
+  showToast('↻','Refreshing','Syncing latest data from M365...');
+  setTimeout(()=>showToast('✅','Synced','247 items updated — 3 new insights found'),1800);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const files = [...e.dataTransfer.files];
+  if (files.length) showToast('📁','Upload Started',`Processing ${files.length} file(s)...`);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  renderDashboard();
+  // show menu btn on small screens
+  if (window.innerWidth <= 900) document.getElementById('menuBtn').style.display='flex';
+  // animate metric values
+  document.querySelectorAll('.metric-value').forEach(el => {
+    const target = parseFloat(el.textContent.replace(/[^0-9.]/g,''));
+    const suffix = el.textContent.replace(/[0-9.,]/g,'');
+    if (!isNaN(target) && target > 0) {
+      let current = 0;
+      const step = target / 40;
+      const timer = setInterval(()=>{
+        current = Math.min(current + step, target);
+        el.textContent = (Number.isInteger(target) ? Math.round(current).toLocaleString() : current.toFixed(1)) + suffix;
+        if (current >= target) clearInterval(timer);
+      }, 25);
+    }
+  });
+});
+
+window.addEventListener('resize', () => {
+  drawLineChart(); drawDonutChart();
+});
+</script>
+</body>
+</html>
