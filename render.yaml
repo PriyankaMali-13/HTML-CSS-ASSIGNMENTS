@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: insightai-enterprise-dashboard
+    env: static
+    staticPublishPath: .
+    buildCommand: ""
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /enterprise-insights.html
